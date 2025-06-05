@@ -10,7 +10,13 @@ from wav_decoder import AttrDict
 from wav_decoder import BigVGANDecoder as WavDecoder
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-s','--speaker', type=str,choices=['70', '159', 'aishell3-SSB0341','didispeech-00010111'], default='', help='Target speaker(70,159,aishell3-SSB0314,didispeech-00010111)')
+parser.add_argument(
+    '-s','--speaker',
+    type=str,
+    choices=['70', '159', 'aishell3-SSB0341', 'didispeech-00010111'],
+    default='',
+    help='Target speaker (70, 159, aishell3-SSB0341, didispeech-00010111)'
+)
 parser.add_argument('-t','--text', type=str, default="你好，今天天气很好。", help='Text to synthesize')
 parser.add_argument('-m','--model', type=str, default="./checkpoints/kalle_model.pt", help='Model file')
 parser.add_argument('-o','--output', type=str, default="output.wav", help='Output file')
@@ -21,7 +27,8 @@ prompt_latent_path = os.path.join('prompt_dir',args.speaker + '.npy')
 prompt_text_path = os.path.join('prompt_dir',args.speaker + '.txt')
 if os.path.exists(prompt_latent_path) and os.path.exists(prompt_text_path):
     prompt_latent = torch.from_numpy(np.load(prompt_latent_path))
-    prompt_text = open(prompt_text_path).read()
+    with open(prompt_text_path, 'r', encoding='utf-8') as f:
+        prompt_text = f.read()
 else:
     prompt_latent = None
     prompt_text = None
