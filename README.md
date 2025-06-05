@@ -27,3 +27,26 @@ Results for 4 target speakers on the seedstts-eval test set
 | 159                                              | --          | --         | 2.40 | 0.733      |
 | aishell3-SSB0341                                 | 0.95        | 0.710      | --   | --         |
 | didispeech-00010111                              | 1.02        | 0.750      | --   | --         |
+
+## Environment Setup
+
+- Python 3.8 or higher
+- PyTorch with CUDA support
+- Transformers
+- NumPy
+- SciPy
+- alias-free-torch
+
+Install dependencies with:
+```bash
+pip install torch transformers numpy scipy alias-free_torch
+```
+
+## Usage Example
+
+After placing the pretrained checkpoints in `./checkpoints`, run:
+```bash
+python infer_from_prompt.py --speaker aishell3-SSB0341 --text "你好，今天天气很好。" --model ./checkpoints/kalle_model.pt --output output.wav
+```
+
+The generated audio will be saved to `output.wav`.
