@@ -1,11 +1,12 @@
-# KALL-E 
-<div style="display: flex;">
-   <img src="./figures/system_overview.jpg" style="margin-right: 20px;width: 80%; height: auto;"/>
-</div>
+# KALL-E
 
-## News
+![System Overview](./figures/system_overview.jpg)
 
-- **Our inference code has been released**
+## Overview
+
+This repository contains the inference utilities for **KALL-E**, a text-to-speech
+system that predicts continuous speech representations using a single
+autoregressive language model.
 
 ## Key Features
 
@@ -17,13 +18,36 @@
 
 ## Performance
 
-Results for 4 target speakers on the seedstts-eval test set
+Results on the seedstts-eval test set for four target speakers
 
-| target_speaker                                   | zh          |            | en   |            |
-|--------------------------------------------------|-------------|------------|------|------------|
-|                                                  | cer         | sim        | wer  | sim        |
-| --                                               | 0.95        | --         | 1.68 | --         |
-| 70                                               | --          | --         | 2.25 | 0.701      |
-| 159                                              | --          | --         | 2.40 | 0.733      |
-| aishell3-SSB0341                                 | 0.95        | 0.710      | --   | --         |
-| didispeech-00010111                              | 1.02        | 0.750      | --   | --         |
+| target_speaker      | zh CER | zh SIM | en WER | en SIM |
+|---------------------|-------:|-------:|------:|-------:|
+| --                  | 0.95   | --     | 1.68  | --    |
+| 70                  | --     | --     | 2.25  | 0.701 |
+| 159                 | --     | --     | 2.40  | 0.733 |
+| aishell3-SSB0341    | 0.95   | 0.710  | --    | --    |
+| didispeech-00010111 | 1.02   | 0.750  | --    | --    |
+
+
+## Environment Setup
+
+- Python 3.8 or higher
+- PyTorch with CUDA support
+- Transformers
+- NumPy
+- SciPy
+- alias-free-torch
+
+Install the dependencies with:
+```bash
+pip install torch transformers numpy scipy alias-free_torch
+```
+
+## Usage Example
+
+After placing the pretrained checkpoints under `./checkpoints`, execute:
+```bash
+python infer_from_prompt.py --speaker aishell3-SSB0341 --text "你好，今天天气很好。" --model ./checkpoints/kalle_model.pt --output output.wav
+```
+
+The generated audio will be saved to `output.wav`.
