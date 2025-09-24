@@ -1,109 +1,144 @@
-# 🎙️ KALL-E: Autoregressive Speech Synthesis with Next-Distribution Prediction
 
-[![Project Page](https://img.shields.io/badge/Project%20Page-GitHub-blue)](https://github.com/xkx-hub/KALL-E)  [![arXiv](https://img.shields.io/badge/arXiv-2410.06885-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/2412.16846) [![Demo](https://img.shields.io/badge/Demo%20Page-blue)](https://nwpu-aslp.feishu.cn/wiki/TfLEwoITwiTReakgfnPczGfunzh?from=from_copylink)
+import os
+import traceback
+import gradio as gr
+import torch
 
-## News
+from loguru import logger
+from infer import infer_tools
 
-* [2025.08.05] 🔥 🔥 🔥  We release the inference code of [KALL-E](https://github.com/xkx-hub/KALL-E)!
-* [2025.09.17] 🎉 🎉 🎉  KALL-E's paper is updated on [arxiv](https://arxiv.org/abs/2412.16846), read it now! 
+# Make einx happy
+os.environ["EINX_FILTER_TRACEBACK"] = "false"
 
+HEADER_MD = f"""# 
 
-## Overview
-This repository contains the inference utilities for **KALL-E**, a text-to-speech system that predicts continuous speech representations using a single autoregressive language model.
+{("KALL-E")}  
 
-![System Overview](./figures/kalle-architecture.jpg)
+"""
 
-- **Autoregressive Language Modeling**: Utilizes an autoregressive approach for next-distribution prediction in text-to-speech synthesis.
-- **Continuous Speech Distribution**: Directly models and predicts continuous speech distributions conditioned on text, avoiding reliance on diffusion-based components.
-- **FlowVAE**: Employs FlowVAE to extract continuous speech distributions from waveforms, rather than using discrete speech tokens.
-- **Single AR Language Model**: Uses a single autoregressive language model to predict continuous speech distributions from text, constrained by Kullback-Leibler divergence loss.
-- **Simplified Paradigm**: Offers a more straightforward and effective approach for using continuous speech representations in TTS.
-
-## Key Features
-
-- **Random Speaker Voices** - 
-    When no speaker prompt is provided, the model is able to generate random voices, either female or male.
-
-- **⚡ Blazing-fast Synthesis**
-    Generate up to 5 seconds of audio with a single click in the web UI.
-
-- **Context-aware Synthesis**
-    KALL-E excels in generating expressive, context-aware speech, showcasing its ability to handle complex linguistic and emotional features with ease. 
-
-## Environment Setup
-
-- Python>=3.9 or higher
-- PyTorch with CUDA support
-- Transformers==4.49.0
-- NumPy
-- SciPy
-- alias-free-torch
-
-<!-- Install the dependencies with:
-```bash
-pip install torch transformers numpy scipy alias-free_torch
-``` -->
-
-## Usage
-
-### 1. Model Download
-
-You need download the model in advance and place them like this:
+TEXTBOX_PLACEHOLDER = ("Put your text here.")
+SPACE_IMPORTED = False
 
 
-```bash
-KALL-E
-|    ckpt
-|    | - flowvae.pt
-|    | - model.pt
-|    ......
-|    model.py
-|    infer.py
-```
+@torch.inference_mode()
+def inference(
+    reference_audio,
+    reference_text,
+    refined_text,
+    enable_reference_audio,
+):
+
+    try:   
+        print(f'refined_text: {refined_text}')
+        print(f'reference_text: {reference_text}')
+        if enable_reference_audio:
+
+            audio = infer_helper.infer(refined_text,reference_text,reference_audio)
+        else:
+            audio = infer_helper.infer(refined_text)
+
+        result = None, (16000, audio), "no error"
+        # return result[0], result[1], result[2]
+        return result[1], result[2]
+    except Exception as e:
+        logger.error(f"发生错误: {e}", exc_info=True)  # 记录异常信息和堆栈
+        logger.error("错误详细信息:\n" + traceback.format_exc())  # 记录完整的异常堆栈信息
+        return None, f"error:{e}"
 
 
-### 2. Unconditional generation
+n_audios = 1
 
-```bash
-python infer.py --target_text "<ka li E> is a text-to-speech system that predicts continuous speech representations using a single autoregressive language model."
-```
-
-### 3. Conditional generation 
-
-```bash
-
-python infer.py \
---target_text "<ka li E> is a text-to-speech system that predicts continuous speech representations using a single autoregressive language model." \
---prompt_text "oh that's crazy!" \
---prompt_wav_path ./test.wav 
-
-```
-
-### 4. Web demo
-
-```bash
-python web.py
-```
-
-## Performance 
-
-<div align="center">
-  <img src="figures/tts-eval.png" alt="eval" width="50%">
-</div>
-
-- **⚡ Blazing-fast Synthesis**
-
-<div align="center">
-  <img src="figures/speed.png" alt="speed" width="60%">
-</div>
-
-- **Context-aware Synthesis**
-
-<div align="center">
-  <img src="figures/emo-heat.png" alt="emo-heat" width="60%">
-</div>
+global_audio_list = []
+global_error_list = []
 
 
 
+def build_app():
+    global infer_helper
+    with gr.Blocks(theme=gr.themes.Base()) as app:
+        gr.Markdown(HEADER_MD)
+
+        # Use light theme by default
+        app.load(
+            None,
+            None,
+            js="() => {const params = new URLSearchParams(window.location.search);if (!params.has('__theme')) {params.set('__theme', '%s');window.location.search = params.toString();}}"
+            % "light",
+        )
+
+        # Inference
+        with gr.Row():
+            with gr.Column(scale=3):
+                text = gr.Textbox(
+                    label=("Input Text"), placeholder=TEXTBOX_PLACEHOLDER, lines=5,value="KALL-E is a text-to-speech system that predicts continuous speech representations using a single autoregressive language model."
+                )
+
+                with gr.Row():
+
+                    with gr.Tab(label=("Reference Audio")):
+                        gr.Markdown(
+                            (
+                                "[optional] 5 to 10 seconds of reference audio, useful for specifying speaker."
+                            )
+                        )
+
+                        enable_reference_audio = gr.Checkbox(
+                            label=("Enable Reference Audio"),
+                        )
+
+                        reference_audio = gr.Audio(
+                            label=("Reference Audio"),
+                            type="filepath",
+                            interactive=True,
+                        )
+                        reference_text = gr.Textbox(
+                            label=("Reference Text"), placeholder=("Enter the transcribtion of the reference audio"), lines=5
+                        )
+
+            with gr.Column(scale=3):
+                with gr.Row():
+                    error = gr.Text(
+                        label=("Error Message"),
+                        visible=True,
+                    )
+                    global_error_list.append(error)
+                with gr.Row():
+                    audio = gr.Audio(
+                        label=("Generated Audio"),
+                        type="numpy",
+                        interactive=False,
+                        visible=True,
+                    )
+                    global_audio_list.append(audio)
+
+                with gr.Row():
+                    with gr.Column(scale=3):
+                        generate = gr.Button(
+                            value="\U0001F3A7 " + ("Generate"), variant="primary"
+                        )
+
+        generate.click(
+            inference,
+            [
+                reference_audio,
+                reference_text,
+                text,
+                enable_reference_audio,
+
+            ],
+            [global_audio_list[0], global_error_list[0]]
+        )
+
+    return app
 
 
+if __name__ == "__main__":
+
+    global infer_helper
+
+    infer_helper = infer_tools()
+
+    logger.info("Launching the web UI...")
+
+    app = build_app()
+    app.launch(show_api=False,share=True, server_name= "0.0.0.0", server_port = 7861)
