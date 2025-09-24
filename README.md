@@ -1,11 +1,13 @@
 # 🎙️ KALL-E: Autoregressive Speech Synthesis with Next-Distribution Prediction
 
-[![Project Page](https://img.shields.io/badge/Project%20Page-GitHub-blue)](https://github.com/xkx-hub/KALL-E)  [![arXiv](https://img.shields.io/badge/arXiv-2410.06885-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/2412.16846) [![Demo](https://img.shields.io/badge/Demo%20Page-blue)](https://nwpu-aslp.feishu.cn/wiki/TfLEwoITwiTReakgfnPczGfunzh?from=from_copylink)
+[![Project Page](https://img.shields.io/badge/Project%20Page-GitHub-blue)](https://github.com/xkx-hub/KALL-E)  [![arXiv](https://img.shields.io/badge/arXiv-2410.06885-b31b1b.svg?logo=arXiv)](https://arxiv.org/abs/2412.16846) [![Demo](https://img.shields.io/badge/Demo%20Page-blue)](https://nwpu-aslp.feishu.cn/wiki/TfLEwoITwiTReakgfnPczGfunzh?from=from_copylink) [![hfspace](https://img.shields.io/badge/🤗-HF%20Space-yellow)](https://huggingface.co/kxxia/KALL-E)
+
 
 ## News
 
 * [2025.08.05] 🔥 🔥 🔥  We release the inference code of [KALL-E](https://github.com/xkx-hub/KALL-E)!
 * [2025.09.17] 🎉 🎉 🎉  KALL-E's paper is updated on [arxiv](https://arxiv.org/abs/2412.16846), read it now! 
+* [2025.09.24] 🔥 🔥 🔥  We release the KALL-E [weights](https://huggingface.co/kxxia/KALL-E)!
 
 
 ## Overview
