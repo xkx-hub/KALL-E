@@ -109,6 +109,7 @@ class infer_tools:
 
         audio = audio.detach().cpu().numpy().astype('int16')
         write("output.wav",self.h.sampling_rate,audio)
+        return audio
 
 
 
