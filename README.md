@@ -105,7 +105,18 @@ python web.py
   <img src="figures/emo-heat.png" alt="emo-heat" width="60%">
 </div>
 
-
+## Citation
+If our work and codebase is useful for you, please cite as:
+```
+@misc{kalle,
+      title={KALL-E:Autoregressive Speech Synthesis with Next-Distribution Prediction}, 
+      author={Kangxiang Xia and Xinfa Zhu and Jixun Yao and Wenjie Tian and Wenhao Li and Lei Xie},
+      year={2025},
+      eprint={2412.16846},
+      archivePrefix={arXiv},
+      url={https://arxiv.org/abs/2412.16846}, 
+}
+```
 
 
 
